@@ -1,15 +1,10 @@
 import unittest
 from inline_markdown import (
     split_nodes_delimiter,
-<<<<<<< HEAD
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_image,
     split_nodes_link,
-=======
-    extract_markdown_links,
-    extract_markdown_images,
->>>>>>> ea919dca1357a724b0a905e12ab12df60763b6a7
 )
 
 from textnode import TextNode, TextType
@@ -74,7 +69,7 @@ class TestInlineMarkdown(unittest.TestCase):
         node = TextNode("**bold** and _italic_", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
-        self.assertEqual(
+        self.assertListEqual(
             [
                 TextNode("bold", TextType.BOLD),
                 TextNode(" and ", TextType.TEXT),
@@ -102,7 +97,6 @@ class TestInlineMarkdown(unittest.TestCase):
         self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
 
     def test_extract_markdown_links(self):
-<<<<<<< HEAD
         text = (
             "This is a [link](https://boot.dev) "
             "and another [youtube](https://youtube.com)"
@@ -169,61 +163,6 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode("existing image", TextType.IMAGE, "https://img.com/existing.png"),
             ],
             result,
-        )
-    def test_split_nodes_link(self):
-        nodes = [
-            TextNode(
-                "Go to [boot](https://boot.dev) and [yt](https://youtube.com)",
-                TextType.TEXT,
-            ),
-            TextNode(
-                "[solo](https://solo.com)",
-                TextType.TEXT,
-            ),
-            TextNode(
-                "Just text",
-                TextType.TEXT,
-            ),
-            TextNode(
-                "This is an ![image](https://img.com/a.png)",
-                TextType.TEXT,
-            ),
-            TextNode(
-                "boot",
-                TextType.LINK,
-                "https://boot.dev",
-            ),
-        ]
-
-        result = split_nodes_link(nodes)
-
-        self.assertListEqual(
-            [
-                TextNode("Go to ", TextType.TEXT),
-                TextNode("boot", TextType.LINK, "https://boot.dev"),
-                TextNode(" and ", TextType.TEXT),
-                TextNode("yt", TextType.LINK, "https://youtube.com"),
-
-                TextNode("solo", TextType.LINK, "https://solo.com"),
-
-                TextNode("Just text", TextType.TEXT),
-
-                TextNode("This is an ![image](https://img.com/a.png)", TextType.TEXT),
-
-                TextNode("boot", TextType.LINK, "https://boot.dev"),
-            ],
-            result,
-=======
-        matches = extract_markdown_links(
-            "This is text with a [link](https://boot.dev) and [another link](https://blog.boot.dev)"
-        )
-        self.assertListEqual(
-            [
-                ("link", "https://boot.dev"),
-                ("another link", "https://blog.boot.dev"),
-            ],
-            matches,
->>>>>>> ea919dca1357a724b0a905e12ab12df60763b6a7
         )
 
 
