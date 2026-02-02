@@ -1,6 +1,10 @@
 import unittest
 from inline_markdown import (
     split_nodes_delimiter,
+    extract_markdown_images,
+    extract_markdown_links,
+    split_nodes_image,
+    split_nodes_link,
 )
 
 from textnode import TextNode, TextType
@@ -84,6 +88,125 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode(" word", TextType.TEXT),
             ],
             new_nodes,
+        )
+
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        text = (
+            "This is a [link](https://boot.dev) "
+            "and another [youtube](https://youtube.com)"
+        )
+
+        result = extract_markdown_links(text)
+
+        self.assertListEqual(
+            [
+                ("link", "https://boot.dev"),
+                ("youtube", "https://youtube.com"),
+            ],
+            result,
+        )
+    def test_extract_markdown_links(self):
+        text = (
+            "This is a [link](https://boot.dev) "
+            "and another [youtube](https://youtube.com)"
+        )
+
+        result = extract_markdown_links(text)
+
+        self.assertListEqual(
+            [
+                ("link", "https://boot.dev"),
+                ("youtube", "https://youtube.com"),
+            ],
+            result, )
+    def test_split_nodes_image(self):
+        nodes = [
+            TextNode(
+                "Start ![one](https://img.com/1.png) middle ![two](https://img.com/2.png) end",
+                TextType.TEXT,
+            ),
+            TextNode(
+                "![solo](https://img.com/solo.png)",
+                TextType.TEXT,
+            ),
+            TextNode(
+                "Just plain text",
+                TextType.TEXT,
+            ),
+            TextNode(
+                "existing image",
+                TextType.IMAGE,
+                "https://img.com/existing.png",
+            ),
+        ]
+
+        result = split_nodes_image(nodes)
+
+        self.assertListEqual(
+            [
+                TextNode("Start ", TextType.TEXT),
+                TextNode("one", TextType.IMAGE, "https://img.com/1.png"),
+                TextNode(" middle ", TextType.TEXT),
+                TextNode("two", TextType.IMAGE, "https://img.com/2.png"),
+                TextNode(" end", TextType.TEXT),
+
+                TextNode("solo", TextType.IMAGE, "https://img.com/solo.png"),
+
+                TextNode("Just plain text", TextType.TEXT),
+
+                TextNode("existing image", TextType.IMAGE, "https://img.com/existing.png"),
+            ],
+            result,
+        )
+    def test_split_nodes_link(self):
+        nodes = [
+            TextNode(
+                "Go to [boot](https://boot.dev) and [yt](https://youtube.com)",
+                TextType.TEXT,
+            ),
+            TextNode(
+                "[solo](https://solo.com)",
+                TextType.TEXT,
+            ),
+            TextNode(
+                "Just text",
+                TextType.TEXT,
+            ),
+            TextNode(
+                "This is an ![image](https://img.com/a.png)",
+                TextType.TEXT,
+            ),
+            TextNode(
+                "boot",
+                TextType.LINK,
+                "https://boot.dev",
+            ),
+        ]
+
+        result = split_nodes_link(nodes)
+
+        self.assertListEqual(
+            [
+                TextNode("Go to ", TextType.TEXT),
+                TextNode("boot", TextType.LINK, "https://boot.dev"),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("yt", TextType.LINK, "https://youtube.com"),
+
+                TextNode("solo", TextType.LINK, "https://solo.com"),
+
+                TextNode("Just text", TextType.TEXT),
+
+                TextNode("This is an ![image](https://img.com/a.png)", TextType.TEXT),
+
+                TextNode("boot", TextType.LINK, "https://boot.dev"),
+            ],
+            result,
         )
 
 
