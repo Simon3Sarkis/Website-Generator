@@ -1,5 +1,5 @@
 import unittest
-from block_markdown import markdown_to_blocks
+from block_markdown import markdown_to_blocks,block_to_block_type, BlockType
 
 class TestBlockMarkdown(unittest.TestCase):
     def test_markdown_to_blocks(self):
@@ -40,3 +40,19 @@ This is a paragraph with many newlines.
                 "This is a paragraph with many newlines.",
             ],
         )
+
+    def test_heading(self):
+        block = "### This is a heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+
+    def test_code(self):
+        block = "```\nprint('hello')\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+
+    def test_olist(self):
+        block = "1. first\n2. second\n3. third"
+        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+
+    def test_paragraph(self):
+        block = "This is just a normal paragraph of text."
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)        
