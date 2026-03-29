@@ -156,3 +156,11 @@ def markdown_to_html_node(markdown):
         children.append(html_node)
         
     return ParentNode("div", children)
+
+def extract_title(markdown):
+    lines = markdown.split("\n")
+    for line in lines:
+        if line.startswith("# "):
+            return line[2:].strip()
+    raise Exception("All pages need an h1 header")
+
