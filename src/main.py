@@ -1,19 +1,25 @@
 import os
+import sys
 import shutil
 from copy_static import copy_files_recursive
-from generate_page import generate_page
+from generate_page import generate_page, generate_pages_recursive
 
 def main():
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+    else:
+        basepath = "/"
+
     dir_path_static = "./static"
-    dir_path_public = "./public"
+    dir_path_docs = "./docs"
 
-    print("Deleting public directory...")
-    if os.path.exists(dir_path_public):
-        shutil.rmtree(dir_path_public)
+    print(f"Building site with basepath: {basepath}")
+    
+    if os.path.exists(dir_path_docs):
+        shutil.rmtree(dir_path_docs)
 
-    print("Copying static files to public directory...")
-    copy_files_recursive(dir_path_static, dir_path_public)
-    generate_page("content/index.md", "template.html", "public/index.html")
+    copy_files_recursive(dir_path_static, dir_path_docs)
+    generate_pages_recursive("content", "template.html", dir_path_docs, basepath)
 
 if __name__ == "__main__":
     main()
